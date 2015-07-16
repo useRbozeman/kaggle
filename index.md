@@ -96,19 +96,13 @@ train$TIME <- as.numeric(format(thedate, "%H")) +
     as.numeric(format(thedate, "%M")) / 60
 ```
 
-. . .
-
-```R
-train[ , c("DAY", "MONTH", "TIME") := datefunc(TIMESTAMP)]
-```
-
 Step 3: Data augmentation
 =========================
 
 ---
 
 >- Create even more data out of the data we have
->- Standard in image analysis
+>- Easy example: image analysis
 >- rotate
 >- blur
 >- instagram
@@ -277,7 +271,8 @@ Try it!
 ---
 
 - www.kaggle.com (Liberty Mutual Property Inspection Prediction)
-- www.math.montana.edu/~lerch/useR_kaggle.zip
 - github.com/useRbozeman
-
+- www.math.montana.edu/~lerch/useR_kaggle.zip
+    - R/benchmark.R -- original random forest benchmark script
+    - R/benchmark_cv.R -- tweaked script for cross validation
 

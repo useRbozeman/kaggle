@@ -142,15 +142,12 @@ train$DAY &lt;-<span class="st"> </span><span class="kw">format</span>(thedate, 
 train$MONTH &lt;-<span class="st"> </span><span class="kw">format</span>(thedate, <span class="st">&quot;%b&quot;</span>)
 train$TIME &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">format</span>(thedate, <span class="st">&quot;%H&quot;</span>)) +
 <span class="st">    </span><span class="kw">as.numeric</span>(<span class="kw">format</span>(thedate, <span class="st">&quot;%M&quot;</span>)) /<span class="st"> </span><span class="dv">60</span></code></pre></div>
-<div class="fragment">
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">train[ , <span class="kw">c</span>(<span class="st">&quot;DAY&quot;</span>, <span class="st">&quot;MONTH&quot;</span>, <span class="st">&quot;TIME&quot;</span>) :<span class="er">=</span><span class="st"> </span><span class="kw">datefunc</span>(TIMESTAMP)]</code></pre></div>
-</div>
 </section></section>
 <section><section id="step-3-data-augmentation" class="titleslide slide level1"><h1>Step 3: Data augmentation</h1></section><section class="slide level2">
 
 <ul>
 <li class="fragment">Create even more data out of the data we have</li>
-<li class="fragment">Standard in image analysis</li>
+<li class="fragment">Easy example: image analysis</li>
 <li class="fragment">rotate</li>
 <li class="fragment">blur</li>
 <li class="fragment">instagram</li>
@@ -287,8 +284,12 @@ h2o.fit &lt;-<span class="st"> </span><span class="kw">h2o.glm</span>(<span clas
 
 <ul>
 <li>www.kaggle.com (Liberty Mutual Property Inspection Prediction)</li>
-<li>www.math.montana.edu/~lerch/useR_kaggle.zip</li>
 <li>github.com/useRbozeman</li>
+<li>www.math.montana.edu/~lerch/useR_kaggle.zip
+<ul>
+<li>R/benchmark.R – original random forest benchmark script</li>
+<li>R/benchmark_cv.R – tweaked script for cross validation</li>
+</ul></li>
 </ul>
 </section></section>
     </div>
