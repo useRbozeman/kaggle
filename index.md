@@ -241,6 +241,9 @@ h2oserver <- h2o.init(nthreads = -1)
 ---
 
 ```R
+h2otrain <- h2o.importFile("train.csv")
+# h2otrain <- as.h2o(train)
+
 x <- c("CALL_TYPE", "TAXI_ID", "MONTH", "DAY", "TIME", "FIRST",
        "SECOND", "LAST", "POINTS_SO_FAR")
 
@@ -249,14 +252,32 @@ y <- "POINTS_LEFT"
 h2o.fit <- h2o.glm(x = x, y = y, data = h2otrain, family = "poisson", key = "pois")
 ```
 
-
-
-
 Step 6: Evaluation and model averaging
 ======================================
 
+---
 
+### Cross Validation ###
 
+>- Split training data into validation and train
+>- Fit on train and predict on validation
+>- Evaluate performance
 
+---
+
+### Model averaging ###
+
+>- Make predictions with a bunch of different types of models
+>- Evaluate the performance with cross validation
+>- Take a weighted average (weighted consensus) to make final predictions
+
+Try it!
+=======
+
+---
+
+- www.kaggle.com (Liberty Mutual Property Inspection Prediction)
+- www.math.montana.edu/~lerch/useR_kaggle.zip
+- github.com/useRbozeman
 
 

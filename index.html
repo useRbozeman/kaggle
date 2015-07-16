@@ -256,14 +256,41 @@ h2oserver &lt;-<span class="st"> </span><span class="kw">h2o.init</span>(<span c
 </ul>
 </section><section class="slide level2">
 
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;CALL_TYPE&quot;</span>, <span class="st">&quot;TAXI_ID&quot;</span>, <span class="st">&quot;MONTH&quot;</span>, <span class="st">&quot;DAY&quot;</span>, <span class="st">&quot;TIME&quot;</span>, <span class="st">&quot;FIRST&quot;</span>,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">h2otrain &lt;-<span class="st"> </span><span class="kw">h2o.importFile</span>(<span class="st">&quot;train.csv&quot;</span>)
+<span class="co"># h2otrain &lt;- as.h2o(train)</span>
+
+x &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;CALL_TYPE&quot;</span>, <span class="st">&quot;TAXI_ID&quot;</span>, <span class="st">&quot;MONTH&quot;</span>, <span class="st">&quot;DAY&quot;</span>, <span class="st">&quot;TIME&quot;</span>, <span class="st">&quot;FIRST&quot;</span>,
        <span class="st">&quot;SECOND&quot;</span>, <span class="st">&quot;LAST&quot;</span>, <span class="st">&quot;POINTS_SO_FAR&quot;</span>)
 
 y &lt;-<span class="st"> &quot;POINTS_LEFT&quot;</span>
 
 h2o.fit &lt;-<span class="st"> </span><span class="kw">h2o.glm</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">data =</span> h2otrain, <span class="dt">family =</span> <span class="st">&quot;poisson&quot;</span>, <span class="dt">key =</span> <span class="st">&quot;pois&quot;</span>)</code></pre></div>
 </section></section>
-<section><section id="step-6-evaluation-and-model-averaging" class="titleslide slide level1"><h1>Step 6: Evaluation and model averaging</h1></section></section>
+<section><section id="step-6-evaluation-and-model-averaging" class="titleslide slide level1"><h1>Step 6: Evaluation and model averaging</h1></section><section class="slide level2">
+
+<h3 id="cross-validation">Cross Validation</h3>
+<ul>
+<li class="fragment">Split training data into validation and train</li>
+<li class="fragment">Fit on train and predict on validation</li>
+<li class="fragment">Evaluate performance</li>
+</ul>
+</section><section class="slide level2">
+
+<h3 id="model-averaging">Model averaging</h3>
+<ul>
+<li class="fragment">Make predictions with a bunch of different types of models</li>
+<li class="fragment">Evaluate the performance with cross validation</li>
+<li class="fragment">Take a weighted average (weighted consensus) to make final predictions</li>
+</ul>
+</section></section>
+<section><section id="try-it" class="titleslide slide level1"><h1>Try it!</h1></section><section class="slide level2">
+
+<ul>
+<li>www.kaggle.com (Liberty Mutual Property Inspection Prediction)</li>
+<li>www.math.montana.edu/~lerch/useR_kaggle.zip</li>
+<li>github.com/useRbozeman</li>
+</ul>
+</section></section>
     </div>
   </div>
 
