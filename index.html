@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Bozeman R useR Group" />
+  <title>Predictive analytics and kaggle</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="reveal.js/css/reveal.css"/>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="reveal.js/css/theme/miggy.css" id="theme">
+  <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+  <script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = 'reveal.js/css/print/pdf.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+  </script>
+    <link rel="stylesheet" href="reveal.js/lib/css/monokai.css">
+  <!--[if lt IE 9]>
+  <script src="reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+  <style type="text/css">
+      .reveal h1 { font-size: 2.0em; }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+    <h1 class="title">Predictive analytics and kaggle</h1>
+    <h2 class="author">Bozeman R useR Group</h2>
+    <h3 class="date"></h3>
+</section>
+
+<section><section id="www.kaggle.com" class="titleslide slide level1"><h1><a href="http://www.kaggle.com">www.kaggle.com</a></h1></section></section>
+<section><section id="taxi-competition" class="titleslide slide level1"><h1>Taxi Competition</h1></section></section>
+<section><section id="steps-of-predictive-analytics" class="titleslide slide level1"><h1>Steps of predictive analytics</h1></section></section>
+<section><section id="step-1-data-processing" class="titleslide slide level1"><h1>Step 1: Data processing</h1></section><section class="slide level2">
+
+<ul>
+<li class="fragment">Data munging/cleaning</li>
+<li class="fragment">80/20 rule for data science ( <a href="http://blog.revolutionanalytics.com/2014/08/data-cleaning-is-a-critical-part-of-the-data-science-process.html">link</a> )</li>
+<li class="fragment">For kaggle competitions data comes well organized ( <a href="./trainhead.csv.txt">csv</a> )</li>
+<li class="fragment">Separate polyline from the rest of the data</li>
+<li class="fragment">Create response variable</li>
+</ul>
+</section><section class="slide level2">
+
+<h3 id="equipment">Equipment</h3>
+<ul>
+<li>Ram: 32Gb</li>
+<li>SSD</li>
+<li>Core i7 8 virtual cores 3.6Ghz</li>
+<li>Atlas for BLAS and LAPACK</li>
+</ul>
+</section><section class="slide level2">
+
+<pre class="r"><code>train &lt;- read.csv(&quot;train.csv&quot;)</code></pre>
+<div class="fragment">
+<p>121 seconds</p>
+</div>
+<div class="fragment">
+<p>1.8 Gb; 1.7 million rows</p>
+</div>
+<div class="fragment">
+<pre class="r"><code>library(readr)
+train &lt;- read_csv(&quot;train.csv&quot;)</code></pre>
+<p>25 seconds</p>
+</div>
+<div class="fragment">
+<pre class="r"><code>library(data.table)
+train &lt;- fread(&quot;train.csv&quot;)</code></pre>
+<p>35 seconds</p>
+</div>
+</section><section class="slide level2">
+
+<ul>
+<li class="fragment">Get total number of gps fixes =&gt; trip time</li>
+<li class="fragment">Split polyline out of the rest of the training variables</li>
+<li class="fragment">Save polyline and rest of training set separately</li>
+</ul>
+</section></section>
+<section><section id="step-2-feature-engineering" class="titleslide slide level1"><h1>Step 2: Feature engineering</h1></section><section class="slide level2">
+
+<p>Create variables to go into model.</p>
+<ul>
+<li class="fragment">Transformations (log, square, inverse, standardization, discretization)</li>
+<li class="fragment">Interactions</li>
+<li class="fragment">More complicated…</li>
+</ul>
+</section><section class="slide level2">
+
+<pre class="r"><code>thedate &lt;- as.POSIXct(as.numeric(train$TIMESTAMP), origin=&quot;1970-01-01&quot;,
+                      tz = &quot;GMT&quot;)
+train$DAY &lt;- format(thedate, &quot;%a&quot;)
+train$MONTH &lt;- format(thedate, &quot;%b&quot;)
+train$TIME &lt;- as.numeric(format(thedate, &quot;%H&quot;)) +
+    as.numeric(format(thedate, &quot;%M&quot;)) / 60</code></pre>
+<div class="fragment">
+<pre class="r"><code>train[ , c(&quot;DAY&quot;, &quot;MONTH&quot;, &quot;TIME&quot;) := datefunc(TIMESTAMP)]</code></pre>
+</div>
+</section></section>
+<section><section id="step-3-data-augmentation" class="titleslide slide level1"><h1>Step 3: Data augmentation</h1></section><section class="slide level2">
+
+<ul>
+<li class="fragment">Create even more data out of the data we have</li>
+<li class="fragment">Standard in image analysis</li>
+<li class="fragment">rotate</li>
+<li class="fragment">blur</li>
+<li class="fragment">instagram</li>
+</ul>
+</section><section class="slide level2">
+
+<ul>
+<li class="fragment">Test data is incomplete trips</li>
+<li class="fragment">Training data is complete trips</li>
+<li class="fragment">Sample from training data a portion of the whole trip</li>
+</ul>
+</section><section class="slide level2">
+
+<pre class="python"><code>with open(&quot;./train_polyline.csv&quot;) as read_file,
+    open(&quot;./train_aug_polyline_raw.csv&quot;, &#39;w&#39;) as write_file
+
+    for line in read_file:
+        n_poly = line.count(&#39;],[&#39;) + 1
+        number_of_samples = int(math.ceil(math.log(n_poly / 5 + 1) + 1))
+
+        for sample in range(0, number_of_samples):
+            if n_poly == 1:
+                num_poly_samp = 1
+            else:
+                num_poly_samp = int(math.ceil(random.uniform(1, n_poly - 1)))
+            new_poly = line.split(&#39;],[&#39;)[0:num_poly_samp]
+            write_file.write(&quot;\&quot;&quot; + &quot;\&quot;,\&quot;&quot;.join(new_poly) + &quot;\&quot;\n&quot;)</code></pre>
+</section></section>
+<section><section id="step-4-feature-engineering-again" class="titleslide slide level1"><h1>Step 4: Feature engineering (again)</h1></section><section class="slide level2">
+
+<ul>
+<li class="fragment">Get information out of polyline.</li>
+<li class="fragment">Define clusters based on all recorded points.</li>
+<li class="fragment">Take augmented partial trips and cluster stats</li>
+<li class="fragment">Starting cluster, second cluster, most recent cluster</li>
+</ul>
+</section><section class="slide level2">
+
+<pre><code>id1, [1, 2], [3, 4], [5, 6], ...
+id2, [7, 8], [9, 10], ...</code></pre>
+<div class="fragment">
+<pre class="csv"><code>id1, 1, 2,
+id1, 3, 4,
+id1, 5, 6,
+id1, ...
+id2, 7, 8,
+id2, 9, 10,
+...</code></pre>
+</div>
+<div class="fragment">
+<pre class="csv"><code>id, clust
+id1, A
+id1, A
+id1, B
+id1, B
+...
+id1, N
+id2, C
+id2, D
+...
+id2, G</code></pre>
+</div>
+</section><section class="slide level2">
+
+<pre class="csv"><code>id, first, second, last
+id1,    A,      B,    N
+id2,    C,      D,    G
+...</code></pre>
+<div class="fragment">
+<pre class="r"><code>cluststat &lt;- function(X)
+{
+    clust &lt;- unique(X)
+    list(first = clust[1],
+         second = clust[2],
+         last = clust[length(clust)])
+}</code></pre>
+</div>
+<div class="fragment">
+<pre class="r"><code>cluster_data[ , cluststat(.SD$clust), by = id]</code></pre>
+</div>
+</section></section>
+<section><section id="step-5-model" class="titleslide slide level1"><h1>Step 5: Model</h1></section><section class="slide level2">
+
+<ul>
+<li class="fragment"><strong>DEEP LEARNING</strong></li>
+<li class="fragment">random forest</li>
+<li class="fragment">gradient boosted trees</li>
+<li class="fragment">k-means</li>
+<li class="fragment">GLM!!</li>
+</ul>
+</section><section class="slide level2">
+
+<h3 id="h2o">h2o</h3>
+<pre class="r"><code>library(h2o)
+# use all threads
+h2o.server(nthreads = -1)</code></pre>
+<p><a href="http://localhost:54321">localhost:54321</a></p>
+</section><section class="slide level2">
+
+<ul>
+<li class="fragment">Model: Poisson</li>
+<li class="fragment">Response: number of gps check-ins remaining</li>
+</ul>
+</section></section>
+<section><section id="step-6-evaluation-and-model-averaging" class="titleslide slide level1"><h1>Step 6: Evaluation and model averaging</h1></section></section>
+    </div>
+  </div>
+
+
+  <script src="reveal.js/lib/js/head.min.js"></script>
+  <script src="reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,         // Display controls in the bottom right corner
+        progress: true,         // Display a presentation progress bar
+        history: true,          // Push each slide change to the browser history
+        center: true,                       // Vertical centering of slides
+        maxScale: 1.5,                  // Bounds for smallest/largest possible content scale
+        slideNumber: false,                // Display the page number of the current slide
+        theme: 'miggy', // available themes are in /css/theme
+        transition: 'fade', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+//          { src: 'reveal.js/plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; }, }
+//          { src: 'reveal.js/plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+]});
+    </script>
+    </body>
+</html>
