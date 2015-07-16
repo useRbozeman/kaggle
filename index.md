@@ -2,7 +2,6 @@
 title: Predictive analytics and kaggle
 author: Bozeman R useR Group
 theme: miggy
-hljs: monokai
 ---
 
 
@@ -26,6 +25,7 @@ Step 1: Data processing
 >- For kaggle competitions data comes well organized ( [csv](./trainhead.csv.txt) )
 >- Separate polyline from the rest of the data
 >- Create response variable
+>- Split training data into training and validation
 
 ---
 
@@ -217,18 +217,18 @@ Step 5: Model
 
 >- **DEEP LEARNING**
 >- random forest
->- gradient boosted trees
+>- gradient boosted decision trees
 >- k-means
 >- GLM!!
 
 ---
 
-### h2o ###
+### [h2o](http://oxdata.com) ###
 
 ```R
 library(h2o)
 # use all threads
-h2o.server(nthreads = -1)
+h2oserver <- h2o.init(nthreads = -1)
 ```
 
 [localhost:54321](http://localhost:54321)
@@ -238,8 +238,25 @@ h2o.server(nthreads = -1)
 >- Model: Poisson
 >- Response: number of gps check-ins remaining
 
+---
+
+```R
+x <- c("CALL_TYPE", "TAXI_ID", "MONTH", "DAY", "TIME", "FIRST",
+       "SECOND", "LAST", "POINTS_SO_FAR")
+
+y <- "POINTS_LEFT"
+
+h2o.fit <- h2o.glm(x = x, y = y, data = h2otrain, family = "poisson", key = "pois")
+```
+
+
+
+
 Step 6: Evaluation and model averaging
 ======================================
+
+
+
 
 
 

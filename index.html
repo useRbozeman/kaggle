@@ -10,6 +10,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="reveal.js/css/reveal.css"/>
   <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
   <link rel="stylesheet" href="reveal.js/css/theme/miggy.css" id="theme">
   <!-- If the query includes 'print-pdf', include the PDF print sheet -->
   <script>
@@ -21,12 +58,13 @@
       document.getElementsByTagName( 'head' )[0].appendChild( link );
     }
   </script>
-    <link rel="stylesheet" href="reveal.js/lib/css/monokai.css">
   <!--[if lt IE 9]>
   <script src="reveal.js/lib/js/html5shiv.js"></script>
   <![endif]-->
+
+
   <style type="text/css">
-      .reveal h1 { font-size: 2.0em; }
+      .reveal h1 { font-size: 2.5em; }
   </style>
 </head>
 <body>
@@ -50,6 +88,7 @@
 <li class="fragment">For kaggle competitions data comes well organized ( <a href="./trainhead.csv.txt">csv</a> )</li>
 <li class="fragment">Separate polyline from the rest of the data</li>
 <li class="fragment">Create response variable</li>
+<li class="fragment">Split training data into training and validation</li>
 </ul>
 </section><section class="slide level2">
 
@@ -62,7 +101,7 @@
 </ul>
 </section><section class="slide level2">
 
-<pre class="r"><code>train &lt;- read.csv(&quot;train.csv&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">train &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;train.csv&quot;</span>)</code></pre></div>
 <div class="fragment">
 <p>121 seconds</p>
 </div>
@@ -70,13 +109,13 @@
 <p>1.8 Gb; 1.7 million rows</p>
 </div>
 <div class="fragment">
-<pre class="r"><code>library(readr)
-train &lt;- read_csv(&quot;train.csv&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(readr)
+train &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;train.csv&quot;</span>)</code></pre></div>
 <p>25 seconds</p>
 </div>
 <div class="fragment">
-<pre class="r"><code>library(data.table)
-train &lt;- fread(&quot;train.csv&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(data.table)
+train &lt;-<span class="st"> </span><span class="kw">fread</span>(<span class="st">&quot;train.csv&quot;</span>)</code></pre></div>
 <p>35 seconds</p>
 </div>
 </section><section class="slide level2">
@@ -97,14 +136,14 @@ train &lt;- fread(&quot;train.csv&quot;)</code></pre>
 </ul>
 </section><section class="slide level2">
 
-<pre class="r"><code>thedate &lt;- as.POSIXct(as.numeric(train$TIMESTAMP), origin=&quot;1970-01-01&quot;,
-                      tz = &quot;GMT&quot;)
-train$DAY &lt;- format(thedate, &quot;%a&quot;)
-train$MONTH &lt;- format(thedate, &quot;%b&quot;)
-train$TIME &lt;- as.numeric(format(thedate, &quot;%H&quot;)) +
-    as.numeric(format(thedate, &quot;%M&quot;)) / 60</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">thedate &lt;-<span class="st"> </span><span class="kw">as.POSIXct</span>(<span class="kw">as.numeric</span>(train$TIMESTAMP), <span class="dt">origin=</span><span class="st">&quot;1970-01-01&quot;</span>,
+                      <span class="dt">tz =</span> <span class="st">&quot;GMT&quot;</span>)
+train$DAY &lt;-<span class="st"> </span><span class="kw">format</span>(thedate, <span class="st">&quot;%a&quot;</span>)
+train$MONTH &lt;-<span class="st"> </span><span class="kw">format</span>(thedate, <span class="st">&quot;%b&quot;</span>)
+train$TIME &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">format</span>(thedate, <span class="st">&quot;%H&quot;</span>)) +
+<span class="st">    </span><span class="kw">as.numeric</span>(<span class="kw">format</span>(thedate, <span class="st">&quot;%M&quot;</span>)) /<span class="st"> </span><span class="dv">60</span></code></pre></div>
 <div class="fragment">
-<pre class="r"><code>train[ , c(&quot;DAY&quot;, &quot;MONTH&quot;, &quot;TIME&quot;) := datefunc(TIMESTAMP)]</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">train[ , <span class="kw">c</span>(<span class="st">&quot;DAY&quot;</span>, <span class="st">&quot;MONTH&quot;</span>, <span class="st">&quot;TIME&quot;</span>) :<span class="er">=</span><span class="st"> </span><span class="kw">datefunc</span>(TIMESTAMP)]</code></pre></div>
 </div>
 </section></section>
 <section><section id="step-3-data-augmentation" class="titleslide slide level1"><h1>Step 3: Data augmentation</h1></section><section class="slide level2">
@@ -125,20 +164,20 @@ train$TIME &lt;- as.numeric(format(thedate, &quot;%H&quot;)) +
 </ul>
 </section><section class="slide level2">
 
-<pre class="python"><code>with open(&quot;./train_polyline.csv&quot;) as read_file,
-    open(&quot;./train_aug_polyline_raw.csv&quot;, &#39;w&#39;) as write_file
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="cf">with</span> <span class="bu">open</span>(<span class="st">&quot;./train_polyline.csv&quot;</span>) <span class="im">as</span> read_file,
+    <span class="bu">open</span>(<span class="st">&quot;./train_aug_polyline_raw.csv&quot;</span>, <span class="st">&#39;w&#39;</span>) <span class="im">as</span> write_file
 
-    for line in read_file:
-        n_poly = line.count(&#39;],[&#39;) + 1
-        number_of_samples = int(math.ceil(math.log(n_poly / 5 + 1) + 1))
+    <span class="cf">for</span> line <span class="op">in</span> read_file:
+        n_gps <span class="op">=</span> line.count(<span class="st">&#39;],[&#39;</span>) <span class="op">+</span> <span class="dv">1</span>
+        num_samples <span class="op">=</span> <span class="bu">int</span>(math.ceil(math.log(n_gps <span class="op">/</span> <span class="dv">5</span> <span class="op">+</span> <span class="dv">1</span>) <span class="op">+</span> <span class="dv">1</span>))
 
-        for sample in range(0, number_of_samples):
-            if n_poly == 1:
-                num_poly_samp = 1
-            else:
-                num_poly_samp = int(math.ceil(random.uniform(1, n_poly - 1)))
-            new_poly = line.split(&#39;],[&#39;)[0:num_poly_samp]
-            write_file.write(&quot;\&quot;&quot; + &quot;\&quot;,\&quot;&quot;.join(new_poly) + &quot;\&quot;\n&quot;)</code></pre>
+        <span class="cf">for</span> sample <span class="op">in</span> <span class="bu">range</span>(<span class="dv">0</span>, num_samples):
+            <span class="cf">if</span> n_gps <span class="op">==</span> <span class="dv">1</span>:
+                num_gps_samp <span class="op">=</span> <span class="dv">1</span>
+            <span class="cf">else</span>:
+                num_gps_samp <span class="op">=</span> <span class="bu">int</span>(math.ceil(random.uniform(<span class="dv">1</span>, n_gps <span class="op">-</span> <span class="dv">1</span>)))
+            new_poly <span class="op">=</span> line.split(<span class="st">&#39;],[&#39;</span>)[<span class="dv">0</span>:num_gps_samp]
+            write_file.write(<span class="st">&quot;</span><span class="ch">\&quot;</span><span class="st">&quot;</span> <span class="op">+</span> <span class="st">&quot;</span><span class="ch">\&quot;</span><span class="st">,</span><span class="ch">\&quot;</span><span class="st">&quot;</span>.join(new_poly) <span class="op">+</span> <span class="st">&quot;</span><span class="ch">\&quot;\n</span><span class="st">&quot;</span>)</code></pre></div>
 </section></section>
 <section><section id="step-4-feature-engineering-again" class="titleslide slide level1"><h1>Step 4: Feature engineering (again)</h1></section><section class="slide level2">
 
@@ -181,16 +220,16 @@ id1,    A,      B,    N
 id2,    C,      D,    G
 ...</code></pre>
 <div class="fragment">
-<pre class="r"><code>cluststat &lt;- function(X)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cluststat &lt;-<span class="st"> </span>function(X)
 {
-    clust &lt;- unique(X)
-    list(first = clust[1],
-         second = clust[2],
-         last = clust[length(clust)])
-}</code></pre>
+    clust &lt;-<span class="st"> </span><span class="kw">unique</span>(X)
+    <span class="kw">list</span>(<span class="dt">first =</span> clust[<span class="dv">1</span>],
+         <span class="dt">second =</span> clust[<span class="dv">2</span>],
+         <span class="dt">last =</span> clust[<span class="kw">length</span>(clust)])
+}</code></pre></div>
 </div>
 <div class="fragment">
-<pre class="r"><code>cluster_data[ , cluststat(.SD$clust), by = id]</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cluster_data[ , <span class="kw">cluststat</span>(.SD$clust), by =<span class="st"> </span>id]</code></pre></div>
 </div>
 </section></section>
 <section><section id="step-5-model" class="titleslide slide level1"><h1>Step 5: Model</h1></section><section class="slide level2">
@@ -198,16 +237,16 @@ id2,    C,      D,    G
 <ul>
 <li class="fragment"><strong>DEEP LEARNING</strong></li>
 <li class="fragment">random forest</li>
-<li class="fragment">gradient boosted trees</li>
+<li class="fragment">gradient boosted decision trees</li>
 <li class="fragment">k-means</li>
 <li class="fragment">GLM!!</li>
 </ul>
 </section><section class="slide level2">
 
-<h3 id="h2o">h2o</h3>
-<pre class="r"><code>library(h2o)
-# use all threads
-h2o.server(nthreads = -1)</code></pre>
+<h3 id="h2o"><a href="http://oxdata.com">h2o</a></h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(h2o)
+<span class="co"># use all threads</span>
+h2oserver &lt;-<span class="st"> </span><span class="kw">h2o.init</span>(<span class="dt">nthreads =</span> -<span class="dv">1</span>)</code></pre></div>
 <p><a href="http://localhost:54321">localhost:54321</a></p>
 </section><section class="slide level2">
 
@@ -215,6 +254,14 @@ h2o.server(nthreads = -1)</code></pre>
 <li class="fragment">Model: Poisson</li>
 <li class="fragment">Response: number of gps check-ins remaining</li>
 </ul>
+</section><section class="slide level2">
+
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;CALL_TYPE&quot;</span>, <span class="st">&quot;TAXI_ID&quot;</span>, <span class="st">&quot;MONTH&quot;</span>, <span class="st">&quot;DAY&quot;</span>, <span class="st">&quot;TIME&quot;</span>, <span class="st">&quot;FIRST&quot;</span>,
+       <span class="st">&quot;SECOND&quot;</span>, <span class="st">&quot;LAST&quot;</span>, <span class="st">&quot;POINTS_SO_FAR&quot;</span>)
+
+y &lt;-<span class="st"> &quot;POINTS_LEFT&quot;</span>
+
+h2o.fit &lt;-<span class="st"> </span><span class="kw">h2o.glm</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">data =</span> h2otrain, <span class="dt">family =</span> <span class="st">&quot;poisson&quot;</span>, <span class="dt">key =</span> <span class="st">&quot;pois&quot;</span>)</code></pre></div>
 </section></section>
 <section><section id="step-6-evaluation-and-model-averaging" class="titleslide slide level1"><h1>Step 6: Evaluation and model averaging</h1></section></section>
     </div>
@@ -243,7 +290,7 @@ h2o.server(nthreads = -1)</code></pre>
           { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
           { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
           { src: 'reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
-          { src: 'reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+
 //          { src: 'reveal.js/plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; }, }
 //          { src: 'reveal.js/plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
 ]});
