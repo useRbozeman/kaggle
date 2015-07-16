@@ -33,7 +33,7 @@ Step 1: Data processing
 
 - Ram: 32Gb
 - SSD
-- Core i7 8 virtual cores 3.6Ghz
+- Core i7 8 virtual cores 4.4Ghz
 - Atlas for BLAS and LAPACK
 
 ---
