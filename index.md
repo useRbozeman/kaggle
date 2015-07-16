@@ -23,9 +23,7 @@ Step 1: Data processing
 >- Data munging/cleaning
 >- 80/20 rule for data science ( [link](http://blog.revolutionanalytics.com/2014/08/data-cleaning-is-a-critical-part-of-the-data-science-process.html) )
 >- For kaggle competitions data comes well organized ( [csv](./trainhead.csv.txt) )
->- Separate polyline from the rest of the data
 >- Create response variable
->- Split training data into training and validation
 
 ---
 
@@ -88,8 +86,25 @@ Create variables to go into model.
 ---
 
 ```R
-thedate <- as.POSIXct(as.numeric(train$TIMESTAMP), origin="1970-01-01",
-                      tz = "GMT")
+# train$new_col <- train$old_col1 / train$old_col2
+
+train <- as.data.table(train)
+train[ , new_col := old_col1 / old_col1 ]
+```
+
+. . .
+
+```R
+train[ , c("new_col1", "new_col2") :=
+                         list(old_col1^2, sin(old_col2)) ]
+```
+
+. . .
+
+```R
+thedate <- as.POSIXct(as.numeric(train$TIMESTAMP),
+                origin="1970-01-01", tz = "GMT")
+
 train$DAY <- format(thedate, "%a")
 train$MONTH <- format(thedate, "%b")
 train$TIME <- as.numeric(format(thedate, "%H")) +
@@ -155,13 +170,13 @@ id2, [7, 8], [9, 10], ...
 id1, 1, 2,
 id1, 3, 4,
 id1, 5, 6,
-id1, ...
+...
 id2, 7, 8,
 id2, 9, 10,
 ...
 ```
 
-. . .
+---
 
 ```csv
 id, clust
@@ -177,7 +192,7 @@ id2, D
 id2, G
 ```
 
----
+. . .
 
 ```csv
 id, first, second, last
@@ -186,7 +201,7 @@ id2,    C,      D,    G
 ...
 ```
 
-. . .
+---
 
 ```R
 cluststat <- function(X)
@@ -211,7 +226,6 @@ Step 5: Model
 
 >- **DEEP LEARNING**
 >- random forest
->- gradient boosted decision trees
 >- k-means
 >- GLM!!
 
@@ -221,7 +235,8 @@ Step 5: Model
 
 ```R
 library(h2o)
-# use all threads
+
+# use all threads: nthreads = -1
 h2oserver <- h2o.init(nthreads = -1)
 ```
 
@@ -243,7 +258,8 @@ x <- c("CALL_TYPE", "TAXI_ID", "MONTH", "DAY", "TIME", "FIRST",
 
 y <- "POINTS_LEFT"
 
-h2o.fit <- h2o.glm(x = x, y = y, data = h2otrain, family = "poisson", key = "pois")
+h2o.fit <- h2o.glm(x = x, y = y, training_frame = h2otrain,
+                   family = "poisson")
 ```
 
 Step 6: Evaluation and model averaging
