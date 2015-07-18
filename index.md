@@ -288,7 +288,4 @@ Try it!
 
 - www.kaggle.com (Liberty Mutual Property Inspection Prediction)
 - github.com/useRbozeman
-- www.math.montana.edu/~lerch/useR_kaggle.zip
-    - R/benchmark.R -- original random forest benchmark script
-    - R/benchmark_cv.R -- tweaked script for cross validation
 
